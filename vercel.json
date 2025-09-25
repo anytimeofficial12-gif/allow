@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "anytime-contest-landing",
+  "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
