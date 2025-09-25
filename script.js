@@ -242,21 +242,29 @@ async function handleFormSubmit(e) {
             showSuccessMessage();
             if (CONFIG.DEBUG_MODE) console.log('Submission successful:', result);
         } else {
-            // Try to parse FastAPI/Pydantic validation errors (422)
+            // Try to parse FastAPI/Pydantic validation errors (422) or text/plain errors
             let errorMessage = 'Unknown error';
             try {
-                const errorData = await response.json();
-                if (errorData && Array.isArray(errorData.detail)) {
-                    errorMessage = errorData.detail
-                        .map(e => (e.msg || e.message || JSON.stringify(e)))
-                        .join('; ');
-                } else if (typeof errorData.detail === 'string') {
-                    errorMessage = errorData.detail;
-                } else if (errorData.message) {
-                    errorMessage = errorData.message;
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    const errorData = await response.json();
+                    if (errorData && Array.isArray(errorData.detail)) {
+                        errorMessage = errorData.detail
+                            .map(e => (e.msg || e.message || JSON.stringify(e)))
+                            .join('; ');
+                    } else if (typeof errorData.detail === 'string') {
+                        errorMessage = errorData.detail;
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    } else {
+                        errorMessage = JSON.stringify(errorData);
+                    }
+                } else {
+                    const text = await response.text();
+                    if (text) errorMessage = text;
                 }
             } catch (_) {
-                // ignore JSON parse errors
+                // ignore parse errors
             }
             console.error('Server error:', response.status, errorMessage);
             throw new Error(`Server error: ${response.status} - ${errorMessage}`);
@@ -440,4 +448,3 @@ window.testBackend = async function() {
         return false;
     }
 };
-
