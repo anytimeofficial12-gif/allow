@@ -1,0 +1,26 @@
+{
+  "name": "anytime-contest-landing",
+  "version": "1.0.0",
+  "description": "ANYTIME Contest Landing Page - Revolutionary Service Platform",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "build": "echo 'Static site - no build step required'",
+    "start": "python -m http.server 3000"
+  },
+  "keywords": [
+    "contest",
+    "landing-page",
+    "anytime",
+    "service-platform"
+  ],
+  "author": "ANYTIME",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/anytime-contest-landing"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

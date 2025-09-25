@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ANYTIME - Revolutionary Service Platform. Join our contest and win ₹500 by guessing what we do!">
+    <meta name="keywords" content="anytime, service platform, contest, win money, guess app functionality">
+    <meta name="author" content="ANYTIME">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://anytime-contest.vercel.app/">
+    <meta property="og:title" content="ANYTIME - Revolutionary Service Platform">
+    <meta property="og:description" content="Join our contest and win ₹500 by guessing what we do!">
+    <meta property="og:image" content="https://anytime-contest.vercel.app/anytime-logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://anytime-contest.vercel.app/">
+    <meta property="twitter:title" content="ANYTIME - Revolutionary Service Platform">
+    <meta property="twitter:description" content="Join our contest and win ₹500 by guessing what we do!">
+    <meta property="twitter:image" content="https://anytime-contest.vercel.app/anytime-logo.png">
+    
+    <title>ANYTIME - Revolutionary Service Platform</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="anytime-logo.png" as="image">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;600;700&display=swap" as="style">
+    
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #F7F9FC 0%, #E9EFF5 100%);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .logo {
+            height: 120px;
+            width: auto;
+            max-width: 350px;
+            object-fit: contain;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+            border-radius: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(10px);
+        }
+
+        .logo:hover {
+            transform: scale(1.1) translateY(-5px) rotateX(5deg);
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #4F46E5;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-mockup {
+            width: 300px;
+            height: 600px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 30px;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            animation: float 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-mockup::before {
+            content: "ANYTIME";
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Contest Section */
+        .contest-section {
+            padding: 6rem 2rem;
+            background: white;
+            position: relative;
+        }
+
+        .contest-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contest-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+
+        .contest-subtitle {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 3rem;
+        }
+
+        .contest-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4F46E5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            color: white;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn.loading {
+            position: relative;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .success-message h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 2rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .terms-text h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+
+        .terms-text h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.5rem;
+            color: #374151;
+        }
+
+        .terms-text p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .modal-footer {
+            padding: 1rem 2rem 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-decline,
+        .btn-accept {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-decline {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-decline:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            color: white;
+        }
+
+        .btn-accept:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .logo {
+                height: 90px;
+                max-width: 220px;
+                padding: 15px;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .contest-title {
+                font-size: 2rem;
+            }
+
+            .contest-form {
+                padding: 2rem;
+            }
+
+            .app-mockup {
+                width: 250px;
+                height: 500px;
+            }
+
+            .app-mockup::before {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 300px;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #1a202c, #2d3748);
+            color: white;
+            padding: 4rem 2rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .footer-logo-section {
+            text-align: center;
+        }
+
+        .footer-logo {
+            height: 100px;
+            width: auto;
+            max-width: 200px;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+            border-radius: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo-section h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-logo-section p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+
+        .footer-section p {
+            color: #a0aec0;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .footer-border {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(90deg, #4F46E5, #6366F1, #4F46E5);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        .logo-pattern {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-image: url('anytime-logo.png');
+            background-size: 40px 40px;
+            background-repeat: repeat-x;
+            background-position: center;
+            opacity: 0.3;
+            filter: brightness(0) invert(1);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Mobile Footer */
+        @media (max-width: 768px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .footer-logo {
+                height: 80px;
+                max-width: 150px;
+                padding: 15px;
+            }
+
+            .logo-pattern {
+                background-size: 30px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <img src="logo.png" alt="ANYTIME Logo" class="logo">
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#contest">Contest</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content fade-in">
+                <h1> Tujhse Hoga To Nahi, Pr Koi na... Kr Le Try</h1>
+                <p>The missing link between you and your needs, that's why. when help will knock , it'll whisper one word "ANYTIME".</p>
+                <a href="#contest" class="cta-button">Join the Contest</a>
+            </div>
+            <div class="hero-visual fade-in">
+                <div class="app-mockup"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contest Section -->
+    <section class="contest-section" id="contest">
+        <div class="contest-container">
+            <h2 class="contest-title fade-in">Guess what we do & Win ₹500</h2>
+            <p class="contest-subtitle fade-in">Be among the first to discover what we're building. Top 10 accurate guesses win!</p>
+            
+            <div class="contest-form fade-in" id="formContainer">
+                <form id="contestForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required aria-describedby="name-help">
+                        <small id="name-help" class="form-help">Enter your full name (minimum 2 characters)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required aria-describedby="email-help">
+                        <small id="email-help" class="form-help">We'll use this to contact you if you win</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="answer">Your Guess</label>
+                        <textarea id="answer" name="answer" placeholder="Kya Lagta Hai Bhayyi, Kya Hoga? " required aria-describedby="answer-help"></textarea>
+                        <small id="answer-help" class="form-help">Describe what you think our app does (minimum 5 characters)</small>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        Submit My Guess
+                    </button>
+                </form>
+                
+                <div id="declineMessage" class="decline-message" style="display: none;">
+                    You must accept the Terms & Conditions to participate.
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="success-message" style="display: none;">
+                <h2>🎉 You're In!</h2>
+                <p>Thank you for participating. Stay tuned for the results!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo-section">
+                <img src="logo.png" alt="ANYTIME Logo" class="footer-logo">
+                <h3>ANYTIME</h3>
+                <p>Revolutionary Service Platform</p>
+            </div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Contest</h4>
+                    <p>Guess our app functionality and win ₹500!</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: support@anytime.com</p>
+                    <p>Phone: 7839745518</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-border">
+            <div class="logo-pattern"></div>
+        </div>
+    </footer>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Terms & Conditions</h2>
+            </div>
+            <div class="modal-body">
+                <div class="terms-text">
+                    <h3>Terms and Conditions – "Guess the App Functionality" Contest</h3>
+                    
+                    <h4>1. Introduction</h4>
+                    <p>These Terms and Conditions ("Terms") govern participation in the Guess the App Functionality Contest ("Contest") organized by ANYTIME ("Organizer," "we," or "us"). By entering, each participant ("you," "participant") agrees to these Terms.</p>
+                    
+                    <h4>2. No Registration Fee</h4>
+                    <p>Entry is completely free. No purchase, payment, or monetary stake is required to participate.</p>
+                    
+                    <h4>3. Nature of the Contest</h4>
+                    <p>This is a skill-based contest. Participants must correctly guess the primary functionality or purpose of the Organizer's mobile application, scheduled for launch on 6 October 2025. Winners are selected solely on the accuracy of their guess; no element of chance, betting, or gambling is involved.</p>
+                    
+                    <h4>4. Eligibility</h4>
+                    <p>Open to individuals aged 18 years or older as of the Contest start date. Participants must be residents of India. Employees, agents, affiliates, or immediate family members of the Organizer are not eligible. Proof of age and residency may be required.</p>
+                    
+                    <h4>5. Contest Period</h4>
+                    <p>Start Date: 20th September 2025<br>
+                    End Date: 5th October 2025<br>
+                    Submissions received after the end date will not be considered.</p>
+                    
+                    <h4>6. How to Participate</h4>
+                    <p>Submit one (1) written guess of the app's core functionality. Only one entry per person is allowed. Multiple or incomplete entries may result in disqualification. Any offensive, defamatory, or unlawful content will be rejected.</p>
+                    
+                    <h4>7. Prizes</h4>
+                    <p>Top 10 participants with the most accurate guesses will each receive ₹500. Winners will be contacted at the email address or phone number provided at entry through notification, after the Contest ends. If a winner cannot be contacted within 10 days, the Organizer may forfeit or reassign the prize at its discretion. Prizes are non-transferable and no substitution or cash equivalent (beyond the stated prize) is permitted.</p>
+                    
+                    <h4>8. Winner Selection</h4>
+                    <p>Entries will be evaluated by the Organizer's internal panel. The panel's decision is final and binding. No correspondence or appeals will be entertained.</p>
+                    
+                    <h4>9. Privacy & Data Use</h4>
+                    <p>Personal information collected will be used only to administer the Contest, contact winners, and deliver prizes. Data will not be sold or shared with third parties except as required to fulfill the above purposes or comply with law. By participating, you consent to this limited use of your data.</p>
+                    
+                    <h4>10. Changes or Cancellation</h4>
+                    <p>The Organizer reserves the right to modify, postpone, or cancel the Contest at any time due to unforeseen circumstances, legal requirements, or events beyond our control. Any changes will be posted on our official website and will become effective immediately.</p>
+                    
+                    <h4>11. Liability Disclaimer</h4>
+                    <p>The Organizer is not responsible for: technical failures (server issues, internet outages, etc.); delayed or lost submissions; any injury, loss, or damage of any kind arising from participation or prize use. By entering, you agree to release and hold harmless the Organizer from any claims or liabilities related to the Contest.</p>
+                    
+                    <h4>12. Legal Compliance</h4>
+                    <p>This Contest complies with all applicable Indian laws, including the Public Gambling Act and relevant state regulations regarding skill-based competitions. Participants are responsible for ensuring their participation is lawful in their state of residence.</p>
+                    
+                    <h4>13. Governing Law & Jurisdiction</h4>
+                    <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts located in Lucknow.</p>
+                    
+                    <h4>14. Contact</h4>
+                    <p>For questions about these Terms or the Contest, please contact:<br>
+                    ANYTIME<br>
+                    Email: support@anytime.com<br>
+                    Phone: 7839745518</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="declineBtn" class="btn-decline">Nahi Padhna😒</button>
+                <button id="acceptBtn" class="btn-accept">Padh Liya Bhai🥱</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Performance monitoring -->
+    <script>
+        // Basic performance monitoring
+        window.addEventListener('load', function() {
+            if (window.performance && window.performance.timing) {
+                const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+                if (CONFIG && CONFIG.DEBUG_MODE) {
+                    console.log('Page load time:', loadTime + 'ms');
+                }
+            }
+        });
+    </script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

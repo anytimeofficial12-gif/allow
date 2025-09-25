@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: anytime-contest-backend
+    env: python
+    plan: starter
+    region: oregon
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: DB_POOL_MAX_SIZE
+        value: "20"
+
