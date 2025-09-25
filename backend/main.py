@@ -110,13 +110,27 @@ app = FastAPI(
 )
 
 
-# CORS configuration: allow only configured Vercel domain in production
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
-allowed_origins = [FRONTEND_ORIGIN]
+# CORS configuration: allow configured origins and Vercel preview domains via regex
+# Support multiple comma-separated origins using FRONTEND_ORIGINS (or legacy FRONTEND_ORIGIN)
+cors_origins_env = os.getenv("FRONTEND_ORIGINS") or os.getenv("FRONTEND_ORIGIN", "")
+allowed_origins = [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+
+# Sensible defaults for local development when no env provided
+if not allowed_origins:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost",
+        "http://127.0.0.1",
+    ]
+
+# Allow Vercel preview/prod domains via regex (can be overridden by env)
+allow_origin_regex = os.getenv("CORS_ALLOW_ORIGIN_REGEX", r"https://.*\\.vercel\\.app")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=allow_origin_regex,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"]
