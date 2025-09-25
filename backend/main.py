@@ -180,12 +180,12 @@ async def health_check():
 def insert_submission(data: ContestSubmission) -> str:
     assert pool is not None
     submission_id = f"sub_{datetime.now().strftime('%Y%m%d_%H%M%S%f')}"
-    ts_value = data.timestamp or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Let Postgres default set the timestamp when possible
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, %s)",
-                (submission_id, data.name, data.email, data.answer, ts_value)
+                "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, COALESCE(%s, NOW()))",
+                (submission_id, data.name, data.email, data.answer, data.timestamp)
             )
         # Ensure the insert is committed before returning connection to pool
         try:
