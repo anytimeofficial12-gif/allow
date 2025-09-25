@@ -12,8 +12,12 @@ services:
         sync: false
       - key: ENVIRONMENT
         value: production
-      - key: FRONTEND_ORIGIN
+      # Comma-separated list of exact origins (optional if using regex below)
+      - key: FRONTEND_ORIGINS
         sync: false
+      # Regex to allow Vercel preview/prod domains
+      - key: CORS_ALLOW_ORIGIN_REGEX
+        value: "https://.*.vercel.app"
       - key: DB_POOL_MAX_SIZE
         value: "20"
 
