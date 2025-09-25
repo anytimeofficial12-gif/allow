@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic.v1 import BaseModel, validator
 
@@ -218,10 +218,29 @@ def list_submissions_db(limit: int = 1000) -> List[Dict[str, Any]]:
 
 
 @app.post("/submit", response_model=SubmissionResponse)
-async def submit_contest_entry(submission: ContestSubmission):
+async def submit_contest_entry(request: Request):
     try:
+        payload: Dict[str, Any] = {}
+        # Try JSON first
+        try:
+            payload = await request.json()
+        except Exception:
+            # Fallback: try form data
+            try:
+                form = await request.form()
+                payload = {k: (v if isinstance(v, str) else str(v)) for k, v in form.items()}
+            except Exception:
+                payload = {}
+
+        if not isinstance(payload, dict):
+            payload = {}
+
+        # Validate using Pydantic model
+        submission = ContestSubmission(**payload)
+
         if not submission.timestamp:
             submission.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         submission_id = insert_submission(submission)
         logger.info(f"Stored submission for {submission.email} -> {submission_id}")
         return SubmissionResponse(
