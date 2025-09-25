@@ -182,6 +182,13 @@ def insert_submission(data: ContestSubmission) -> str:
                 "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, %s)",
                 (submission_id, data.name, data.email, data.answer, ts_value)
             )
+        # Ensure the insert is committed before returning connection to pool
+        try:
+            conn.commit()
+        except Exception:
+            # If commit fails, rollback to avoid leaked transaction
+            conn.rollback()
+            raise
     return submission_id
 
 
@@ -251,10 +258,10 @@ async def submit_contest_entry(request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error in submit_contest_entry: {str(e)}")
+        logger.exception(f"Unexpected error in submit_contest_entry")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred. Please try again later."
+            detail=f"Server error: {str(e)}"
         )
 
 
@@ -298,5 +305,8 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
     uvicorn.run("backend.main:app", host=host, port=port, log_level="debug" if DEBUG_MODE else "info")
+
+
+
 
 
