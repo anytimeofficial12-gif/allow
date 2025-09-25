@@ -14,6 +14,10 @@ const answerInput = document.getElementById('answer');
 // Configuration - Backend URL
 // Uses CONFIG from config.js for easy deployment management
 const API_BASE_URL = CONFIG.API_BASE_URL;
+// Log API base URL once even in production to help diagnose routing
+try {
+    console.log('API Base URL (resolved):', API_BASE_URL);
+} catch (_) {}
 
 // State management
 let termsAccepted = false;
