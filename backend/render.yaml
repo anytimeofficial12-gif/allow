@@ -14,7 +14,7 @@ services:
         value: production
       # Comma-separated list of exact origins (optional if using regex below)
       - key: FRONTEND_ORIGINS
-        sync: false
+        value: "https://allow-git-main-anytimes-projects-166cfa49.vercel.app"
       # Regex to allow Vercel preview/prod domains
       - key: CORS_ALLOW_ORIGIN_REGEX
         value: "https://.*.vercel.app"
