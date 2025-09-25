@@ -36,6 +36,8 @@ if not DATABASE_URL:
 
 # Create a global connection pool (max_size 20 for 1M+ rows capacity usage)
 pool: Optional[ConnectionPool] = None
+# Track migration status to avoid race conditions on cold starts
+MIGRATIONS_DONE: bool = False
 
 
 def init_pool() -> None:
@@ -55,6 +57,7 @@ def init_pool() -> None:
 
 
 def run_migrations() -> None:
+    global MIGRATIONS_DONE
     assert pool is not None
     with pool.connection() as conn:
         conn.execute(
@@ -73,6 +76,7 @@ def run_migrations() -> None:
         except Exception:
             conn.rollback()
             raise
+    MIGRATIONS_DONE = True
 
 
 # Pydantic models
@@ -173,6 +177,7 @@ async def health_check():
         "environment": ENVIRONMENT,
         "database": db_status,
         "cors_origins": allowed_origins,
+        "migrations_done": MIGRATIONS_DONE,
         "timestamp": datetime.now().isoformat()
     }
 
@@ -182,11 +187,29 @@ def insert_submission(data: ContestSubmission) -> str:
     submission_id = f"sub_{datetime.now().strftime('%Y%m%d_%H%M%S%f')}"
     # Let Postgres default set the timestamp when possible
     with pool.connection() as conn:
+        # Ensure migrations are applied (defensive in case startup hook didn't run)
+        if not MIGRATIONS_DONE:
+            try:
+                run_migrations()
+            except Exception as e:
+                logger.warning(f"run_migrations failed before insert (will attempt insert anyway): {e}")
         with conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, COALESCE(%s, NOW()))",
-                (submission_id, data.name, data.email, data.answer, data.timestamp)
-            )
+            try:
+                cur.execute(
+                    "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, COALESCE(%s, NOW()))",
+                    (submission_id, data.name, data.email, data.answer, data.timestamp)
+                )
+            except Exception as e:
+                # If table missing (relation does not exist), run migration once and retry
+                if "does not exist" in str(e) and "submissions" in str(e):
+                    logger.warning("Table missing during insert; running migrations and retrying once")
+                    run_migrations()
+                    cur.execute(
+                        "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, COALESCE(%s, NOW()))",
+                        (submission_id, data.name, data.email, data.answer, data.timestamp)
+                    )
+                else:
+                    raise
         # Ensure the insert is committed before returning connection to pool
         try:
             conn.commit()
