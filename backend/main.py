@@ -10,7 +10,7 @@ from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic.v1 import BaseModel, validator
+from pydantic.v1 import BaseModel, validator, ValidationError
 
 import psycopg
 from psycopg_pool import ConnectionPool
@@ -68,6 +68,11 @@ def run_migrations() -> None:
             )
             """
         )
+        try:
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
 
 
 # Pydantic models
@@ -237,13 +242,36 @@ async def submit_contest_entry(request: Request):
                 form = await request.form()
                 payload = {k: (v if isinstance(v, str) else str(v)) for k, v in form.items()}
             except Exception:
-                payload = {}
+                # Last resort: try raw text -> json
+                try:
+                    raw_text = await request.body()
+                    if raw_text:
+                        import json as _json
+                        payload = _json.loads(raw_text.decode("utf-8"))
+                    else:
+                        payload = {}
+                except Exception:
+                    payload = {}
 
         if not isinstance(payload, dict):
             payload = {}
 
+        # Log only the keys received (avoid sensitive data in logs)
+        try:
+            logger.debug(f"/submit received keys: {list(payload.keys())}")
+        except Exception:
+            pass
+
         # Validate using Pydantic model
-        submission = ContestSubmission(**payload)
+        try:
+            submission = ContestSubmission(**payload)
+        except ValidationError as ve:
+            # Return a structured 422 with combined messages
+            details = [
+                {"loc": e.get('loc'), "msg": e.get('msg'), "type": e.get('type')}
+                for e in ve.errors()
+            ]
+            raise HTTPException(status_code=422, detail=details)
 
         if not submission.timestamp:
             submission.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -305,8 +333,5 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
     uvicorn.run("backend.main:app", host=host, port=port, log_level="debug" if DEBUG_MODE else "info")
-
-
-
 
 
