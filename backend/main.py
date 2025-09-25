@@ -10,7 +10,7 @@ from typing import Optional, List, Dict, Any
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, validator
+from pydantic.v1 import BaseModel, validator
 
 import psycopg
 from psycopg_pool import ConnectionPool
