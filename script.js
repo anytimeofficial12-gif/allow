@@ -242,9 +242,24 @@ async function handleFormSubmit(e) {
             showSuccessMessage();
             if (CONFIG.DEBUG_MODE) console.log('Submission successful:', result);
         } else {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('Server error:', response.status, errorData);
-            throw new Error(`Server error: ${response.status} - ${errorData.message || 'Unknown error'}`);
+            // Try to parse FastAPI/Pydantic validation errors (422)
+            let errorMessage = 'Unknown error';
+            try {
+                const errorData = await response.json();
+                if (errorData && Array.isArray(errorData.detail)) {
+                    errorMessage = errorData.detail
+                        .map(e => (e.msg || e.message || JSON.stringify(e)))
+                        .join('; ');
+                } else if (typeof errorData.detail === 'string') {
+                    errorMessage = errorData.detail;
+                } else if (errorData.message) {
+                    errorMessage = errorData.message;
+                }
+            } catch (_) {
+                // ignore JSON parse errors
+            }
+            console.error('Server error:', response.status, errorMessage);
+            throw new Error(`Server error: ${response.status} - ${errorMessage}`);
         }
         
     } catch (error) {
@@ -425,3 +440,4 @@ window.testBackend = async function() {
         return false;
     }
 };
+
