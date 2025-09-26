@@ -15,23 +15,9 @@ const answerInput = document.getElementById('answer');
 // Uses CONFIG from config.js for easy deployment management
 let API_BASE_URL = CONFIG.API_BASE_URL;
 
-// Try to resolve API base URL dynamically: prefer Vercel rewrite (/api), fallback to Render direct URL
-async function resolveApiBaseUrl() {
-    const possibleBases = [
-        CONFIG.API_BASE_URL, // '/api' in prod, 'http://localhost:8000' in dev
-        'https://allow-3.onrender.com'
-    ];
-    for (const base of possibleBases) {
-        try {
-            const res = await fetch(`${base}/health`, { method: 'GET' });
-            if (res.ok) {
-                API_BASE_URL = base;
-                break;
-            }
-        } catch (_) {
-            // try next
-        }
-    }
+// Initialize API base URL
+function initializeApiBaseUrl() {
+    API_BASE_URL = CONFIG.API_BASE_URL;
     try { console.log('API Base URL (resolved):', API_BASE_URL); } catch (_) {}
 }
 
@@ -56,8 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
     setupEventListeners();
 
-    // Resolve API endpoint in the background
-    resolveApiBaseUrl();
+    // Initialize API endpoint
+    initializeApiBaseUrl();
 });
 
 // Event Listeners
