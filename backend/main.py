@@ -134,7 +134,7 @@ if not allowed_origins:
     ]
 
 # Allow Vercel preview/prod domains via regex (can be overridden by env)
-allow_origin_regex = os.getenv("CORS_ALLOW_ORIGIN_REGEX", r"https://.*\\.vercel\\.app")
+allow_origin_regex = os.getenv("CORS_ALLOW_ORIGIN_REGEX", r"https://.*\.vercel\.app")
 
 app.add_middleware(
     CORSMiddleware,
@@ -144,6 +144,10 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"]
 )
+
+# Log CORS configuration for debugging
+logger.info(f"CORS allowed_origins: {allowed_origins}")
+logger.info(f"CORS allow_origin_regex: {allow_origin_regex}")
 
 
 @app.on_event("startup")
