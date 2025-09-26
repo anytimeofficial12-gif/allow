@@ -146,6 +146,7 @@ if not allowed_origins:
         "http://127.0.0.1:3000",
         "http://localhost",
         "http://127.0.0.1",
+        "https://allow-khaki.vercel.app",
     ]
 
 allow_origin_regex = os.getenv("CORS_ALLOW_ORIGIN_REGEX", r"https://.*\.vercel\.app")
@@ -169,6 +170,7 @@ from fastapi import Response
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     response: Response = await call_next(request)
+    # Security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
@@ -177,7 +179,15 @@ async def add_security_headers(request, call_next):
     # Prefer CSP frame-ancestors over X-Frame-Options
     allowed_csp_origins = "'self' https://allow-khaki.vercel.app https://*.vercel.app"
     response.headers["Content-Security-Policy"] = f"default-src 'self'; frame-ancestors {allowed_csp_origins}"
+    # Caching: default no-store for dynamic endpoints
+    if request.url.path.startswith("/submit") or request.url.path.startswith("/submissions") or request.url.path.startswith("/health"):
+        response.headers["Cache-Control"] = "no-store"
     return response
+
+@app.options("/submit")
+async def options_submit():
+    # Explicit preflight handler (CORS middleware will add headers)
+    return Response(status_code=204)
 
 
 # Storage functions
