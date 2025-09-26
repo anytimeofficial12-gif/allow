@@ -17,7 +17,7 @@ services:
         value: "https://allow-git-main-anytimes-projects-166cfa49.vercel.app"
       # Regex to allow Vercel preview/prod domains
       - key: CORS_ALLOW_ORIGIN_REGEX
-        value: "https://.*.vercel.app"
+        value: "https://.*\\.vercel\\.app"
       - key: DB_POOL_MAX_SIZE
         value: "20"
 
