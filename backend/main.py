@@ -2,6 +2,7 @@
 FastAPI Backend for ANYTIME Contest (Multi-storage backend)
 Supports Supabase, Google Sheets, and PostgreSQL with automatic fallback.
 """
+from __future__ import annotations
 
 import os
 import logging
@@ -53,7 +54,7 @@ DATABASE_URL = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or os.gete
 
 # Initialize storage clients
 supabase: Optional[Client] = None
-postgres_pool: Optional[ConnectionPool] = None
+postgres_pool: Optional["ConnectionPool"] = None
 in_memory_storage: List[Dict[str, Any]] = []
 
 
