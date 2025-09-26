@@ -163,6 +163,23 @@ logger.info(f"CORS allowed_origins: {allowed_origins}")
 logger.info(f"CORS allow_origin_regex: {allow_origin_regex}")
 
 
+# Security headers middleware
+from fastapi import Response
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response: Response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
+    # Prefer CSP frame-ancestors over X-Frame-Options
+    allowed_csp_origins = "'self' https://allow-khaki.vercel.app https://*.vercel.app"
+    response.headers["Content-Security-Policy"] = f"default-src 'self'; frame-ancestors {allowed_csp_origins}"
+    return response
+
+
 # Storage functions
 async def insert_submission_supabase(data: ContestSubmission) -> str:
     """Insert submission to Supabase"""
