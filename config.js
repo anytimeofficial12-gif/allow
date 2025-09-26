@@ -9,11 +9,10 @@
 const CONFIG = {
     // Backend URL - Update this when deploying
     // For local development: 'http://localhost:8000'
-    // For production on Vercel: backend hosted on Render. Use /api to leverage vercel.json rewrite.
-    // Set VERCEL to use rewrites -> /api/* -> Render URL. For local, use localhost.
+    // For production: Direct connection to Render backend
     API_BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:8000'  // Local development
-        : '/api',  // Production: use Vercel rewrite to Render backend
+        : 'https://allow-3.onrender.com',  // Production: direct connection to Render backend
     
     // Application settings
     APP_NAME: 'ANYTIME',
