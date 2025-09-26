@@ -12,7 +12,7 @@ const CONFIG = {
     // For production: Direct connection to Render backend
     API_BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:8000'  // Local development
-        : 'https://allow-4.onrender.com',  // Production: direct connection to Render backend
+        : '/api',  // Production: same-origin proxy via vercel.json rewrite to backend
     
     // Application settings
     APP_NAME: 'ANYTIME',
