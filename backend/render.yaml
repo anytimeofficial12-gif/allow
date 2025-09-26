@@ -1,38 +1,24 @@
-services:
-  - type: web
-    name: anytime-contest-backend
-    env: python
-    plan: starter
-    region: oregon
-    buildCommand: "pip install -r backend/requirements.txt"
-    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
-    autoDeploy: true
-    envVars:
-      # Storage backend selection (supabase, sheets, postgres, memory)
-      - key: STORAGE_BACKEND
-        value: supabase
-      # Supabase configuration (recommended)
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      # Google Sheets configuration (fallback)
-      - key: GOOGLE_SHEETS_API_KEY
-        sync: false
-      - key: GOOGLE_SHEET_ID
-        sync: false
-      - key: GOOGLE_SHEET_RANGE
-        value: "Sheet1!A:E"
-      # PostgreSQL configuration (legacy)
-      - key: DATABASE_URL
-        sync: false
-      - key: ENVIRONMENT
-        value: production
-      # CORS configuration
-      - key: FRONTEND_ORIGINS
-        value: "https://allow-git-main-anytimes-projects-166cfa49.vercel.app"
-      - key: CORS_ALLOW_ORIGIN_REGEX
-        value: "https://.*\\.vercel\\.app"
-      - key: DB_POOL_MAX_SIZE
-        value: "20"
+# Environment Configuration
+ENVIRONMENT=development
+HOST=0.0.0.0
+PORT=8000
 
+# Storage Backend Selection
+# Options: supabase, sheets, postgres
+STORAGE_BACKEND=supabase
+
+# Supabase Configuration (Recommended)
+SUPABASE_URL=https://osegrqquvjvdudwqyjtl.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zZWdycXF1dmp2ZHVkd3F5anRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MTg1OTMsImV4cCI6MjA3NDI5NDU5M30.ZyCGAPqXMitlNnCNl_vthgr13zRhtrQqact2CFT2mjU
+
+# Google Sheets Configuration (Fallback)
+GOOGLE_SHEETS_API_KEY=your-google-api-key
+GOOGLE_SHEET_ID=your-sheet-id
+GOOGLE_SHEET_RANGE=Sheet1!A:E
+
+# PostgreSQL Configuration (Legacy)
+DATABASE_URL=postgresql://anytime_contest_db_user:NnVBUPbkzkd9qyGdAbE0vuCYDjlQSJDV@dpg-d3b1flruibrs73f43k9g-a.oregon-postgres.render.com/anytime_contest_db
+
+# CORS Configuration (comma-separated list)
+FRONTEND_ORIGINS=http://localhost:3000,https://allow-git-main-anytimes-projects-166cfa49.vercel.app,https://allow-o3dttaag3-anytimes-projects-166cfa49.vercel.app,https://allow-khaki.vercel.app
+CORS_ALLOW_ORIGIN_REGEX=https://.*\.vercel\.app
