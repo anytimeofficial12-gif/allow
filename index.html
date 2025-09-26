@@ -57,6 +57,7 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 0.5rem 0;
             transition: all 0.3s ease;
@@ -82,6 +83,7 @@
             padding: 20px;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 2px solid rgba(255, 255, 255, 0.3);
             position: relative;
             transform-style: preserve-3d;
@@ -366,6 +368,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .modal.show {
@@ -587,6 +590,7 @@
             padding: 20px;
             background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(99, 102, 241, 0.1));
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 1rem;
         }
@@ -720,13 +724,13 @@
                 <form id="contestForm">
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required aria-describedby="name-help">
+                        <input type="text" id="name" name="name" required aria-describedby="name-help" autocomplete="name">
                         <small id="name-help" class="form-help">Enter your full name (minimum 2 characters)</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required aria-describedby="email-help">
+                        <input type="email" id="email" name="email" required aria-describedby="email-help" autocomplete="email">
                         <small id="email-help" class="form-help">We'll use this to contact you if you win</small>
                     </div>
                     
