@@ -13,27 +13,18 @@ from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic.v1 import BaseModel, validator, ValidationError
 
-# Import storage backends
+# Supabase storage backend
 try:
     from supabase import create_client, Client
     SUPABASE_AVAILABLE = True
 except ImportError:
     SUPABASE_AVAILABLE = False
 
-try:
-    import psycopg
-    from psycopg_pool import ConnectionPool
-    POSTGRES_AVAILABLE = True
-except ImportError:
-    POSTGRES_AVAILABLE = False
-
-import httpx
-
 
 # Environment configuration
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 DEBUG_MODE = ENVIRONMENT == 'development'
-STORAGE_BACKEND = os.getenv('STORAGE_BACKEND', 'supabase').lower()
+STORAGE_BACKEND = 'supabase'
 
 # Logging
 log_level = logging.DEBUG if DEBUG_MODE else logging.INFO
@@ -47,52 +38,23 @@ logger = logging.getLogger(__name__)
 # Storage configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_ANON_KEY')
-GOOGLE_SHEETS_API_KEY = os.getenv('GOOGLE_SHEETS_API_KEY')
-GOOGLE_SHEET_ID = os.getenv('GOOGLE_SHEET_ID')
-GOOGLE_SHEET_RANGE = os.getenv('GOOGLE_SHEET_RANGE', 'Sheet1!A:E')
-DATABASE_URL = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or os.getenv('POSTGRES_URL_NON_POOLING')
 
 # Initialize storage clients
 supabase: Optional[Client] = None
-postgres_pool: Optional["ConnectionPool"] = None
 in_memory_storage: List[Dict[str, Any]] = []
 
 
 def init_storage() -> str:
-    """Initialize the selected storage backend with fallback"""
-    global supabase, postgres_pool
-    
-    # Try Supabase first (recommended)
-    if STORAGE_BACKEND == 'supabase' and SUPABASE_AVAILABLE and SUPABASE_URL and SUPABASE_KEY:
+    """Initialize Supabase storage with fallback to memory"""
+    global supabase
+    if SUPABASE_AVAILABLE and SUPABASE_URL and SUPABASE_KEY:
         try:
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
             logger.info("Initialized Supabase storage")
             return "supabase"
         except Exception as e:
             logger.warning(f"Supabase initialization failed: {e}")
-    
-    # Try Google Sheets
-    if STORAGE_BACKEND == 'sheets' and GOOGLE_SHEETS_API_KEY and GOOGLE_SHEET_ID:
-        logger.info("Initialized Google Sheets storage")
-        return "sheets"
-    
-    # Try PostgreSQL
-    if STORAGE_BACKEND == 'postgres' and POSTGRES_AVAILABLE and DATABASE_URL:
-        try:
-            pool_kwargs = {
-                "min_size": 1,
-                "max_size": int(os.getenv("DB_POOL_MAX_SIZE", "10")),
-                "max_idle": 300,
-                "timeout": 30,
-            }
-            postgres_pool = ConnectionPool(DATABASE_URL, **pool_kwargs)
-            logger.info("Initialized PostgreSQL storage")
-            return "postgres"
-        except Exception as e:
-            logger.warning(f"PostgreSQL initialization failed: {e}")
-    
-    # Fallback to in-memory storage
-    logger.warning("All storage backends failed, using in-memory storage")
+    logger.warning("Using in-memory storage")
     return "memory"
 
 
@@ -226,46 +188,10 @@ async def insert_submission_supabase(data: ContestSubmission) -> str:
     return submission_id
 
 
-async def insert_submission_sheets(data: ContestSubmission) -> str:
-    """Insert submission to Google Sheets"""
-    if not GOOGLE_SHEETS_API_KEY or not GOOGLE_SHEET_ID:
-        raise Exception("Google Sheets not configured")
-    
-    submission_id = f"sub_{datetime.now().strftime('%Y%m%d_%H%M%S%f')}"
-    timestamp = data.timestamp or datetime.now().isoformat()
-    
-    row_data = [submission_id, data.name, data.email, data.answer, timestamp]
-    
-    url = f"https://sheets.googleapis.com/v4/spreadsheets/{GOOGLE_SHEET_ID}/values/{GOOGLE_SHEET_RANGE}:append"
-    params = {
-        'valueInputOption': 'RAW',
-        'key': GOOGLE_SHEETS_API_KEY
-    }
-    payload = {'values': [row_data]}
-    
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, params=params, json=payload)
-        response.raise_for_status()
-    
-    return submission_id
+# Removed Google Sheets storage path
 
 
-def insert_submission_postgres(data: ContestSubmission) -> str:
-    """Insert submission to PostgreSQL"""
-    if not postgres_pool:
-        raise Exception("PostgreSQL not initialized")
-    
-    submission_id = f"sub_{datetime.now().strftime('%Y%m%d_%H%M%S%f')}"
-    
-    with postgres_pool.connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO submissions (id, name, email, answer, timestamp) VALUES (%s, %s, %s, %s, COALESCE(%s, NOW()))",
-                (submission_id, data.name, data.email, data.answer, data.timestamp)
-            )
-        conn.commit()
-    
-    return submission_id
+# Removed PostgreSQL storage path
 
 
 def insert_submission_memory(data: ContestSubmission) -> str:
@@ -293,10 +219,6 @@ async def insert_submission(data: ContestSubmission) -> str:
     try:
         if current_storage == 'supabase':
             return await insert_submission_supabase(data)
-        elif current_storage == 'sheets':
-            return await insert_submission_sheets(data)
-        elif current_storage == 'postgres':
-            return insert_submission_postgres(data)
         else:
             return insert_submission_memory(data)
     except Exception as e:
@@ -314,12 +236,6 @@ def count_submissions() -> int:
         if current_storage == 'supabase' and supabase:
             result = supabase.table('submissions').select('id', count='exact').execute()
             return result.count or 0
-        elif current_storage == 'postgres' and postgres_pool:
-            with postgres_pool.connection() as conn:
-                with conn.cursor() as cur:
-                    cur.execute("SELECT COUNT(*) FROM submissions")
-                    row = cur.fetchone()
-                    return int(row[0]) if row and row[0] is not None else 0
         else:
             return len(in_memory_storage)
     except Exception as e:
@@ -346,26 +262,6 @@ def list_submissions(limit: int = 1000) -> List[Dict[str, Any]]:
                     "storage_method": "supabase"
                 })
             return submissions
-        elif current_storage == 'postgres' and postgres_pool:
-            with postgres_pool.connection() as conn:
-                with conn.cursor() as cur:
-                    cur.execute(
-                        "SELECT id, name, email, answer, to_char(timestamp, 'YYYY-MM-DD HH24:MI:SS') as timestamp FROM submissions ORDER BY timestamp DESC LIMIT %s",
-                        (limit,)
-                    )
-                    rows = cur.fetchall() or []
-                    submissions = []
-                    for r in rows:
-                        submissions.append({
-                            "id": r[0],
-                            "name": r[1],
-                            "email": r[2],
-                            "answer": r[3],
-                            "timestamp": r[4],
-                            "submitted_at": r[4],
-                            "storage_method": "postgres"
-                        })
-                    return submissions
         else:
             return in_memory_storage[-limit:] if in_memory_storage else []
     except Exception as e:
