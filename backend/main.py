@@ -176,9 +176,23 @@ async def add_security_headers(request, call_next):
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
-    # Prefer CSP frame-ancestors over X-Frame-Options
-    allowed_csp_origins = "'self' https://allow-khaki.vercel.app https://*.vercel.app"
-    response.headers["Content-Security-Policy"] = f"default-src 'self'; frame-ancestors {allowed_csp_origins}"
+    # Content Security Policy
+    allowed_frame_ancestors = "'self' https://allow-khaki.vercel.app https://*.vercel.app"
+    csp_directives = [
+        "default-src 'self'",
+        f"frame-ancestors {allowed_frame_ancestors}",
+        "base-uri 'none'",
+        "script-src 'self' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+        "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+        "font-src 'self' https://fonts.gstatic.com data:",
+        "img-src 'self' data: https:",
+        "connect-src 'self' https://allow-4.onrender.com",
+        "object-src 'none'",
+        "frame-src 'self'",
+        "upgrade-insecure-requests"
+    ]
+    response.headers["Content-Security-Policy"] = "; ".join(csp_directives)
     # Caching: default no-store for dynamic endpoints
     if request.url.path.startswith("/submit") or request.url.path.startswith("/submissions") or request.url.path.startswith("/health"):
         response.headers["Cache-Control"] = "no-store"
