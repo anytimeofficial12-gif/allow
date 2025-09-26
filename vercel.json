@@ -12,14 +12,10 @@
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Resource-Policy", "value": "cross-origin" }
       ]
     },
     {
@@ -35,7 +31,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://allow-3.onrender.com/$1"
+      "destination": "https://allow-4.onrender.com/$1"
     }
   ]
 }
